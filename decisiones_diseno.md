@@ -184,6 +184,20 @@ compartida mostró 280 para la habitación doble y 500 para la suite,
 además del mensaje de finalización. El diagrama UML se visualizó
 correctamente en GitHub.
 
+También se probó DetalleEstadia desde la terminal. Para una entrada
+el 10 de octubre de 2026 y una salida el 12 de octubre de 2026,
+con dos huéspedes, el sistema calculó correctamente dos noches.
+La comprobación terminó con el mensaje “PRUEBA CORRECTA”.
+
+En una segunda prueba se invirtieron las fechas, colocando la entrada
+el 12 de octubre y la salida el 10 de octubre de 2026. El constructor
+rechazó la estadía y lanzó el ValueError esperado con el mensaje
+“La salida debe ser posterior a la entrada”.
+
+Esta segunda prueba comprobó la validación de fechas. Todavía no
+demuestra la captura de una excepción personalizada ni la continuación
+del programa principal después de un error.
+
 Aún falta verificar las reservas y sus relaciones, incorporar Huesped
 y las excepciones, y ampliar main.py para crear al menos ocho objetos.
 
@@ -201,6 +215,9 @@ El diseño distribuye las responsabilidades entre habitaciones,
 reservas, huéspedes y detalles de estadía. La herencia permite compartir
 datos comunes y el polimorfismo permite utilizar los distintos tipos
 de habitaciones desde un mismo ciclo.
+
+Las pruebas realizadas confirmaron el cálculo de noches de
+DetalleEstadia y el rechazo de una salida anterior a la entrada.
 
 La estructura inicial está implementada parcialmente. La conclusión
 final sobre su funcionamiento se completará después de integrar
