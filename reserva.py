@@ -1,5 +1,10 @@
 from habitacion import Habitacion
+from huesped import Huesped
 from detalle_estadia import DetalleEstadia
+from excepciones import (
+    CapacidadExcedidaError,
+    HabitacionNoDisponibleError,
+)
 
 
 class Reserva:
@@ -12,16 +17,22 @@ class Reserva:
         if not isinstance(codigo, str) or not codigo.strip():
             raise ValueError("El código de reserva no puede estar vacío.")
 
+        if not isinstance(huesped, Huesped):
+            raise ValueError("Debe proporcionar un huésped válido.")
+
         if not isinstance(habitacion, Habitacion):
             raise ValueError("Debe proporcionar una habitación válida.")
 
-        # Composición: la reserva crea su propio detalle de estadía.
+        # Composición: cada reserva crea su propio detalle de estadía.
         self.__detalle = DetalleEstadia(
             fecha_entrada, fecha_salida, cantidad_huespedes
         )
 
         if cantidad_huespedes > habitacion.capacidad:
-            raise ValueError("La cantidad de huéspedes supera la capacidad.")
+            raise CapacidadExcedidaError(
+                "La cantidad de huéspedes supera la capacidad "
+                "de la habitación."
+            )
 
         self.__codigo = codigo.strip()
         self.__huesped = huesped
@@ -53,7 +64,7 @@ class Reserva:
         return self.__habitacion.calcular_precio(noches)
 
     def confirmar(self, reservas_existentes):
-        """Evita reservas confirmadas con fechas que se cruzan."""
+        """Comprueba la disponibilidad antes de confirmar."""
         for reserva in reservas_existentes:
             if reserva is self or not reserva.confirmada:
                 continue
@@ -68,7 +79,7 @@ class Reserva:
             )
 
             if misma_habitacion and fechas_cruzadas:
-                raise ValueError(
+                raise HabitacionNoDisponibleError(
                     "La habitación ya está reservada para esas fechas."
                 )
 
@@ -83,4 +94,3 @@ class Reserva:
             f"{self.__detalle.describir()}\n"
             f"Total: {self.calcular_total():.2f}"
         )
-    

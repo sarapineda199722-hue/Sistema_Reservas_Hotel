@@ -1,237 +1,324 @@
-# Documento de decisiones de diseño
+# Universidad de Manizales
 
+## Facultad de Ciencias e Ingenierías
+## Ingeniería Analítica de Datos
+
+# Documento de Decisiones de Diseño
 ## Sistema de Reservas de Hotel
 
-Actividad Colaborativa N.º 3 — Programación I
+**Asignatura:** Programación I  
+**Actividad:** Actividad Colaborativa N.º 3 — Proyecto Final  
+**Elaborado por:** Sara Liliana Pineda Castro  
+**Fecha:** Octubre de 2026  
 
-Integrantes: Sara Liliana Pineda Castro y Julián Loaiza Botero.
+---
 
-Estado del documento: borrador del diseño y del avance actual.
+## 1. Introducción
 
-## Introducción
+El proyecto aborda la organización de reservas de un hotel que
+ofrece habitaciones individuales, dobles y suites. El problema
+consiste en calcular el valor de las estadías y evitar reservas
+con fechas inválidas, cantidades de huéspedes superiores a la
+capacidad o cruces con reservas confirmadas.
 
-El proyecto representa un sistema de reservas de hotel mediante
-programación orientada a objetos. Su propósito es organizar los datos
-de las habitaciones, los huéspedes y las estadías, calcular precios
-y evitar reservas que incumplan las reglas del hotel.
+El propósito es aplicar los conceptos de programación orientada
+a objetos mediante una solución en Python. El sistema funciona
+en consola y mantiene los objetos en memoria durante la ejecución.
 
-El alcance previsto incluye habitaciones individuales, dobles y
-suites. El programa funcionará en consola y utilizará objetos
-almacenados en memoria, sin base de datos.
+## 2. Descripción general de la solución
 
-## Organización de las clases
+La solución separa las responsabilidades entre habitaciones,
+huéspedes, reservas y detalles de estadía.
 
-La clase abstracta Habitacion reúne el número, la capacidad y la tarifa
-por noche. También valida la cantidad de noches y establece los métodos
-calcular_precio y describir. No se crean objetos directamente de esta
-clase porque el sistema necesita un tipo concreto de habitación.
+Las habitaciones conocen sus características y calculan su precio.
+Los huéspedes contienen la información de identificación.
+Los detalles de estadía administran las fechas y calculan las noches.
+Las reservas relacionan estos objetos y comprueban la disponibilidad
+antes de confirmarse.
+
+El proyecto utiliza seis clases concretas, una clase abstracta
+y tres excepciones personalizadas.
+
+## 3. Organización y responsabilidades de las clases
+
+### 3.1. Habitacion
+
+Habitacion es la clase abstracta del sistema. Contiene el número,
+la capacidad y la tarifa por noche, además del método validar_noches.
+
+Define los métodos abstractos calcular_precio y describir.
+No debe instanciarse porque representa un concepto general:
+para calcular un precio y obtener una descripción se necesita
+un tipo concreto de habitación.
+
+### 3.2. Tipos de habitaciones
 
 HabitacionIndividual representa una habitación para una persona.
-Su atributo específico indica si incluye desayuno. Cuando se incluye,
-el cálculo incorpora un cargo de 15 por noche.
+Su atributo incluye_desayuno determina si se agrega un cargo
+de 15 por noche a la tarifa base.
 
-HabitacionDoble representa una habitación para dos personas. Guarda
-el tipo de camas y la disponibilidad de balcón. El balcón agrega
-un cargo de 20 por noche.
+HabitacionDoble representa una habitación para dos personas.
+Guarda el tipo de camas y el atributo tiene_balcon.
+Cuando tiene balcón, agrega un cargo de 20 por noche.
 
-Suite representa una habitación para cuatro personas. Guarda una lista
-de servicios y un cargo adicional por noche. El precio incorpora ese
-cargo a la tarifa base.
+Suite representa una habitación para cuatro personas.
+Guarda una lista de servicios y un cargo_extra_por_noche.
+Este cargo se suma a la tarifa base antes de multiplicar
+por la cantidad de noches.
 
-Estas capacidades y cargos son reglas elegidas para la demostración
-académica; no representan tarifas de un hotel real.
+Los cargos y las capacidades son reglas elegidas para
+la demostración académica.
 
-Huesped tendrá la responsabilidad de guardar el nombre y la
-identificación de la persona que realiza una reserva. Su implementación
-está pendiente de incorporación.
+### 3.3. Huesped
 
-DetalleEstadia guarda la fecha de entrada, la fecha de salida y la
-cantidad de huéspedes. Calcula las noches como la diferencia entre
-las fechas y comprueba que la salida sea posterior a la entrada.
+Huesped almacena el nombre y la identificación de quien realiza
+la reserva. Su constructor rechaza textos vacíos y su método
+describir presenta los datos de la persona.
 
-Reserva relaciona un huésped con una habitación y crea su detalle
-de estadía. Guarda un código y un estado de confirmación, calcula
-el total y comprueba los cruces de fechas antes de confirmar.
+### 3.4. DetalleEstadia
 
-## Abstracción y herencia
+DetalleEstadia contiene la fecha de entrada, la fecha de salida
+y la cantidad de huéspedes.
+
+Su constructor comprueba que las fechas sean objetos date,
+que la salida sea posterior a la entrada y que la cantidad
+de huéspedes sea un entero positivo.
+
+El método calcular_noches obtiene la diferencia entre las fechas.
+El método describir presenta los datos de la estadía.
+
+### 3.5. Reserva
+
+Reserva guarda un código, un huésped, una habitación,
+un detalle de estadía y un estado de confirmación.
+
+Su constructor valida los objetos recibidos y comprueba
+que la cantidad de huéspedes no supere la capacidad.
+
+calcular_total solicita a la habitación el precio correspondiente
+a las noches de la estadía. confirmar revisa los cruces con otras
+reservas confirmadas. describir presenta la información completa.
+
+## 4. Abstracción, herencia y especialización
 
 Se eligió Habitacion como clase abstracta porque los tres tipos
-comparten datos, pero calculan y describen sus características
-de manera diferente.
+comparten datos, pero tienen características y reglas de precio
+diferentes.
 
-La herencia corresponde a una relación “es un”: una habitación
-individual, una habitación doble y una suite son habitaciones.
-Reserva y Huesped tienen responsabilidades diferentes, por lo que
-se relacionan con otros objetos mediante asociaciones.
+HabitacionIndividual, HabitacionDoble y Suite heredan de Habitacion.
+La relación representa “es un”: una suite es una habitación,
+al igual que una habitación individual o doble.
 
-Cada clase hija sobrescribe calcular_precio y describir. Así,
-la estructura común permanece en Habitacion y las reglas particulares
-se encuentran en la clase que las necesita.
+Las clases hijas comparten número, capacidad, tarifa por noche
+y el método validar_noches. Sus constructores utilizan super()
+para inicializar los atributos comunes.
 
-## Encapsulación y validación
+Los atributos particulares permiten especializar cada clase:
+desayuno en la individual, camas y balcón en la doble,
+y servicios y cargo adicional en la suite.
 
-Los atributos se guardan con doble guion bajo y se consultan mediante
-propiedades. Esto permite controlar el acceso a los datos y evitar
-modificaciones directas accidentales. El doble guion bajo no constituye
-una barrera de seguridad absoluta en Python.
+Reserva y Huesped no heredan de Habitacion porque representan
+entidades con responsabilidades diferentes.
 
-Los constructores comprueban los datos antes de completar la creación
-de los objetos. Por ejemplo, la capacidad debe ser un entero positivo
-y la tarifa debe ser mayor que cero.
+## 5. Encapsulamiento
 
-La propiedad servicios de Suite devuelve una copia de la lista.
-Así, modificar la lista recibida no cambia directamente los servicios
-guardados dentro del objeto.
+Los atributos de las entidades se almacenan con doble guion bajo
+y se consultan mediante propiedades.
 
-## Polimorfismo
+Las validaciones de los constructores permiten controlar
+los datos con los que se crean los objetos. Las propiedades
+no incluyen setters, por lo que no permiten asignar directamente
+nuevos valores por esa vía.
 
-El programa principal contiene una lista con objetos
-HabitacionIndividual, HabitacionDoble y Suite.
+Suite devuelve una copia de su lista de servicios. De esta manera,
+modificar la lista obtenida no modifica directamente la lista interna.
 
-Un único ciclo llama a describir y calcular_precio para cada objeto.
-Python ejecuta la implementación correspondiente a cada habitación,
-sin que el ciclo tenga que preguntar cuál es su tipo.
+El doble guion bajo ayuda a evitar accesos accidentales,
+pero no constituye una barrera de seguridad absoluta en Python.
 
-En la prueba inicial de dos noches, los resultados esperados son
-190 para la habitación individual con desayuno, 280 para la doble
-con balcón y 500 para la suite con cargo adicional.
+## 6. Sobreescritura y polimorfismo
 
-## Asociaciones y composición
+Las tres clases hijas sobrescriben calcular_precio y describir.
 
-Reserva mantiene asociaciones con Huesped y Habitacion. Estos objetos
-tienen identidad propia y pueden participar en distintas reservas.
+calcular_precio mantiene el mismo nombre, pero aplica el cargo
+particular de cada habitación. describir presenta los atributos
+propios de cada tipo.
 
-La relación entre Reserva y DetalleEstadia se diseñó como composición.
-El constructor de Reserva crea un detalle exclusivo a partir de las
-fechas y la cantidad de huéspedes. Ese detalle forma parte de la reserva
-y no se comparte entre reservas.
+En main.py se crea una única lista que contiene una habitación
+individual, una doble y una suite. Un único ciclo llama
+a describir y calcular_precio sobre todos los objetos.
 
-Esta decisión permite separar los cálculos de fechas de las reglas
-de confirmación. Aunque Python permite conservar una referencia al
-detalle, el diseño del sistema lo considera una parte de su reserva.
+No se utilizan condicionales para seleccionar un método
+según el tipo de habitación. Cada objeto responde con
+la implementación de su clase.
 
-## Confirmación y disponibilidad
+Para dos noches, los resultados son 190.00 para la individual
+con desayuno, 280.00 para la doble con balcón y 500.00
+para la suite con cargo adicional.
 
-Antes de confirmar una reserva, se revisan las reservas confirmadas
-de la misma habitación. La habitación se identifica por su número,
-que se considera único dentro del hotel.
+## 7. Asociaciones y composición
 
-Existe un cruce cuando la entrada de una reserva es anterior a la
-salida de la otra y su salida es posterior a la entrada de la otra.
+Reserva mantiene dos asociaciones: una con Huesped
+y otra con Habitacion. Estos objetos tienen identidad propia,
+pueden existir sin una reserva y participar en distintas reservas.
 
-Con esta regla, una reserva puede comenzar el mismo día en que termina
-otra. Las reservas pendientes no bloquean la disponibilidad.
+La relación con DetalleEstadia se implementó como composición.
+El constructor de Reserva crea un detalle exclusivo a partir
+de las fechas y la cantidad de huéspedes.
 
-La comprobación depende de recibir la lista completa de reservas
-existentes. El programa principal deberá mantener y proporcionar
-esa lista.
+Ese detalle forma parte de la estructura de la reserva
+y no se comparte con otras reservas. La composición permite
+separar los cálculos de fechas de las reglas de confirmación.
 
-## Excepciones personalizadas previstas
+No se resolvió mediante herencia porque una reserva contiene
+un detalle de estadía; no es un detalle de estadía.
 
-Se prevén tres excepciones del dominio: FechasInvalidasError,
-CapacidadExcedidaError y HabitacionNoDisponibleError.
+En Python es posible conservar una referencia al detalle.
+La pertenencia exclusiva corresponde al diseño del sistema,
+no a una garantía de eliminación automática del objeto.
 
-DetalleEstadia lanzará FechasInvalidasError cuando la salida no sea
-posterior a la entrada. Reserva lanzará CapacidadExcedidaError cuando
-la cantidad de huéspedes supere la capacidad de la habitación.
-El método confirmar lanzará HabitacionNoDisponibleError cuando
-encuentre una reserva confirmada con fechas que se crucen.
+## 8. Disponibilidad y confirmación
 
-Actualmente estas situaciones utilizan ValueError. La integración
-pendiente sustituirá esos errores por las excepciones personalizadas.
-Las validaciones generales de datos podrán conservar ValueError.
+confirmar recibe la lista de reservas existentes y revisa
+las que están confirmadas y corresponden a la misma habitación.
 
-El programa principal deberá capturar cada excepción, mostrar
-un mensaje claro y continuar con las demás demostraciones.
+La habitación se identifica por su número, considerado único
+dentro del hotel.
 
-## Evolución de las decisiones
+Existe un cruce cuando la entrada de una reserva es anterior
+a la salida de la otra y su salida es posterior a la entrada
+de la otra.
 
-Primero se implementaron los tipos de habitaciones y una prueba
-de precios. Después se incorporaron DetalleEstadia y Reserva,
-separando los datos de la estadía de la confirmación.
+Esta regla permite que una reserva comience el mismo día
+en que termina otra. Las reservas pendientes no bloquean
+la disponibilidad.
 
-Se decidió crear DetalleEstadia dentro de Reserva para representar
-la composición de forma explícita. También se mantuvo el cálculo
-del precio en las habitaciones para que Reserva pueda solicitarlo
-sin conocer las reglas de cada tipo.
+La comprobación requiere recibir la lista completa
+de reservas existentes. main.py mantiene esa lista y agrega
+las reservas después de confirmarlas correctamente.
 
-El README y el UML describen el avance actual. Se actualizarán cuando
-se incorporen Huesped y las excepciones, y cuando se amplíe main.py.
+## 9. Manejo de excepciones
 
-## Uso de inteligencia artificial
+Se definieron tres excepciones personalizadas que heredan
+de Exception.
 
-Se utilizó ChatGPT para apoyar la propuesta de clases, generar
-fragmentos de código, explicar conceptos y preparar borradores
-de documentación.
+FechasInvalidasError se lanza desde el constructor de
+DetalleEstadia cuando la salida es igual o anterior a la entrada.
 
-Durante esta etapa se ajustó la distribución del trabajo para dejar
-a Julián la clase Huesped, las excepciones y la revisión del código.
-También se dejó explícito en la documentación qué partes siguen
-pendientes, evitando presentar el sistema como terminado.
+CapacidadExcedidaError se lanza desde el constructor de Reserva
+cuando la cantidad de huéspedes supera la capacidad.
 
-Se mantuvo temporalmente ValueError en las reglas del dominio mientras
-se incorpora el archivo de excepciones. Esta decisión deberá revisarse
-durante la integración.
+HabitacionNoDisponibleError se lanza desde confirmar
+cuando existe una reserva confirmada de la misma habitación
+con fechas cruzadas.
 
-Todavía falta registrar los cambios o correcciones que surjan al revisar
-las sugerencias de la IA y ejecutar el sistema completo. Los integrantes
-deberán comprender y poder explicar todo el código antes de entregar.
+main.py provoca y captura cada situación mediante try y except.
+Después muestra un mensaje claro y continúa ejecutándose.
 
-## Verificación y trabajo pendiente
+Las validaciones generales, como nombres vacíos o cantidades
+no positivas, conservan ValueError.
 
-Se ejecutó la prueba inicial de habitaciones en Python. La salida
-compartida mostró 280 para la habitación doble y 500 para la suite,
-además del mensaje de finalización. El diagrama UML se visualizó
-correctamente en GitHub.
+## 10. Evolución de las decisiones de diseño
 
-También se probó DetalleEstadia desde la terminal. Para una entrada
-el 10 de octubre de 2026 y una salida el 12 de octubre de 2026,
-con dos huéspedes, el sistema calculó correctamente dos noches.
-La comprobación terminó con el mensaje “PRUEBA CORRECTA”.
+La primera versión implementó los tipos de habitaciones
+y una demostración de precios.
 
-En una segunda prueba se invirtieron las fechas, colocando la entrada
-el 12 de octubre y la salida el 10 de octubre de 2026. El constructor
-rechazó la estadía y lanzó el ValueError esperado con el mensaje
-“La salida debe ser posterior a la entrada”.
+Después se incorporaron DetalleEstadia y Reserva para separar
+la información de la estadía de la confirmación.
 
-Esta segunda prueba comprobó la validación de fechas. Todavía no
-demuestra la captura de una excepción personalizada ni la continuación
-del programa principal después de un error.
+Inicialmente las situaciones anormales del dominio utilizaban
+ValueError. Durante la integración se sustituyeron por las tres
+excepciones personalizadas para distinguir los errores de fechas,
+capacidad y disponibilidad.
 
-Aún falta verificar las reservas y sus relaciones, incorporar Huesped
-y las excepciones, y ampliar main.py para crear al menos ocho objetos.
+También se incorporó Huesped y se agregó la validación de su tipo
+en Reserva. Esto evita aceptar un objeto que no corresponda
+a la entidad esperada.
 
-La demostración final deberá incluir reservas válidas y los tres casos
-de error previstos, comprobando que el programa continúe después
-de capturarlos. También conviene comprobar reservas consecutivas
-que no se crucen.
+main.py se amplió para demostrar reservas válidas, errores
+controlados y una reserva consecutiva. Finalmente se actualizaron
+el README y el UML para reflejar las clases implementadas.
 
-Cada integrante deberá registrar su aporte real mediante un commit
-en el repositorio.
+## 11. Herramientas utilizadas
 
-## Conclusiones provisionales
+Se utilizó Visual Studio Code para editar los archivos y una
+terminal con Python 3.13 para ejecutar la demostración.
 
-El diseño distribuye las responsabilidades entre habitaciones,
-reservas, huéspedes y detalles de estadía. La herencia permite compartir
-datos comunes y el polimorfismo permite utilizar los distintos tipos
-de habitaciones desde un mismo ciclo.
+El diagrama de clases se escribió con Mermaid en un archivo
+Markdown. Git y GitHub se utilizan para administrar las versiones
+y alojar el repositorio del proyecto.
 
-Las pruebas realizadas confirmaron el cálculo de noches de
-DetalleEstadia y el rechazo de una salida anterior a la entrada.
+ChatGPT se utilizó como apoyo para explicar conceptos,
+proponer y elaborar fragmentos de código, revisar la estructura
+y preparar la documentación.
 
-La estructura inicial está implementada parcialmente. La conclusión
-final sobre su funcionamiento se completará después de integrar
-y verificar todos los componentes.
+Las propuestas se ajustaron durante la integración:
+se reemplazó el uso provisional de ValueError en los errores
+del dominio, se incorporó la validación de Huesped y se amplió
+la demostración inicial para incluir reservas y excepciones.
 
-## Referencias
+La verificación se realizó ejecutando el programa y comparando
+sus resultados con las reglas definidas. También se revisó
+que las clases, los métodos y las relaciones correspondieran
+con los conceptos solicitados en la actividad.
+
+## 12. Verificación del funcionamiento
+
+Se ejecutó python main.py y se observaron los siguientes resultados:
+
+- Los precios por dos noches fueron 190.00, 280.00 y 500.00.
+- Se mostraron los datos de tres huéspedes.
+- Se confirmaron tres reservas iniciales en habitaciones diferentes.
+- Se capturó el error de fechas inválidas.
+- Se capturó el error de capacidad excedida.
+- Se capturó el error de habitación no disponible.
+- El programa continuó después de cada excepción.
+- Se confirmó una reserva consecutiva sin cruce de fechas.
+- El total final fue de cuatro reservas confirmadas.
+- La ejecución llegó a FIN DE LA DEMOSTRACIÓN.
+
+La demostración crea más de ocho objetos: tres habitaciones,
+tres huéspedes y cuatro reservas válidas, además de sus detalles
+de estadía y la reserva cuya confirmación se rechaza.
+
+La revisión del código permite identificar una clase abstracta,
+seis clases concretas, tres clases hijas con dos métodos
+sobrescritos, una colección heterogénea, dos asociaciones,
+una composición y tres excepciones personalizadas.
+
+La ejecución realizada verifica los casos incluidos en main.py;
+no constituye una prueba de todas las entradas posibles.
+
+## 13. Conclusiones
+
+El sistema distribuye las responsabilidades entre habitaciones,
+huéspedes, reservas y detalles de estadía.
+
+La herencia permite compartir atributos y especializar
+los comportamientos. El polimorfismo permite utilizar los tres
+tipos de habitaciones mediante las mismas llamadas.
+
+Una dificultad de la integración fue conectar las clases
+de reservas con los huéspedes y sustituir los errores generales
+por excepciones del dominio. Estas modificaciones permitieron
+demostrar los casos excepcionales sin detener el programa.
+
+El proceso permitió aplicar la diferencia entre herencia,
+asociación y composición, así como comprobar la importancia
+de mantener la documentación de acuerdo con el código.
+
+El alcance es una demostración en consola con datos en memoria.
+Una ampliación futura podría incorporar almacenamiento permanente
+y una interfaz para registrar reservas.
+
+## 14. Referencias
 
 Universidad de Manizales. Actividad colaborativa N.º 3:
 Proyecto Final. Material de la asignatura Programación I.
 
-Python Software Foundation. Documentación de Python 3.13:
-clases, abc, datetime y excepciones definidas por el usuario.
+Python Software Foundation. Documentación de Python 3.13.
 https://docs.python.org/es/3.13/
 
-OpenAI. ChatGPT. Herramienta de apoyo utilizada durante
-la elaboración del código y la documentación.
+OpenAI. ChatGPT. Herramienta de apoyo para el desarrollo
+y la documentación.
 https://chatgpt.com/

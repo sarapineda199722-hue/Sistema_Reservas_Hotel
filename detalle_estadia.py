@@ -1,4 +1,5 @@
 from datetime import date
+from excepciones import FechasInvalidasError
 
 
 class DetalleEstadia:
@@ -9,10 +10,14 @@ class DetalleEstadia:
             raise ValueError("Las fechas deben ser objetos de tipo date.")
 
         if fecha_salida <= fecha_entrada:
-            raise ValueError("La salida debe ser posterior a la entrada.")
+            raise FechasInvalidasError(
+                "La salida debe ser posterior a la entrada."
+            )
 
         if type(cantidad_huespedes) is not int or cantidad_huespedes <= 0:
-            raise ValueError("La cantidad de huéspedes debe ser un entero positivo.")
+            raise ValueError(
+                "La cantidad de huéspedes debe ser un entero positivo."
+            )
 
         self.__fecha_entrada = fecha_entrada
         self.__fecha_salida = fecha_salida
@@ -40,4 +45,3 @@ class DetalleEstadia:
             f"huéspedes: {self.__cantidad_huespedes}, "
             f"noches: {self.calcular_noches()}."
         )
-    

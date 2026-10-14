@@ -1,44 +1,94 @@
 # Sistema de Reservas de Hotel
 
-Proyecto desarrollado para la Actividad Colaborativa N.º 3
-de Programación I.
-
-## Integrantes
-
-- Sara Liliana Pineda Castro
-- Julián Loaiza Botero
+Proyecto de la Actividad Colaborativa N.º 3: Proyecto Final,
+de la asignatura Programación I de la Universidad de Manizales.
 
 ## Descripción
 
-El sistema representa habitaciones individuales, dobles y suites,
-calcula el precio de una estadía y permite crear y confirmar reservas.
+El sistema permite representar diferentes tipos de habitaciones,
+registrar huéspedes y crear reservas con fechas de entrada y salida.
 
-Las reservas incluyen fechas de entrada y salida y una cantidad
-de huéspedes. El sistema comprueba las fechas, la capacidad de
-la habitación y los cruces con otras reservas confirmadas.
+Calcula el precio de las estadías y controla fechas inválidas,
+capacidad excedida y habitaciones no disponibles por cruces
+con reservas confirmadas.
 
-El proyecto funciona en consola y almacena los objetos en memoria,
-sin utilizar una base de datos.
+Funciona en consola y almacena los objetos en memoria.
+No utiliza una base de datos ni guarda las reservas al cerrar
+el programa.
 
-## Clases del proyecto
+## Clases del sistema
 
-- Habitacion: clase abstracta con los datos comunes de las habitaciones.
-- HabitacionIndividual: habitación para una persona, con desayuno opcional.
-- HabitacionDoble: habitación para dos personas, con tipo de camas y balcón opcional.
-- Suite: habitación para cuatro personas, con servicios y un cargo adicional.
-- DetalleEstadia: guarda las fechas y la cantidad de huéspedes y calcula las noches.
-- Reserva: relaciona al huésped con la habitación y crea su detalle de estadía.
-- Huesped: clase pendiente de incorporación para representar al huésped.
+| Clase | Responsabilidad |
+|---|---|
+| Habitacion | Clase abstracta que reúne los datos comunes y define los métodos de las habitaciones. |
+| HabitacionIndividual | Representa una habitación para una persona con desayuno opcional. |
+| HabitacionDoble | Representa una habitación para dos personas con tipo de camas y balcón opcional. |
+| Suite | Representa una habitación para cuatro personas con servicios y un cargo adicional. |
+| Huesped | Guarda el nombre y la identificación de quien realiza la reserva. |
+| DetalleEstadia | Guarda las fechas y la cantidad de huéspedes y calcula las noches. |
+| Reserva | Relaciona al huésped con la habitación, crea su detalle de estadía y controla la confirmación. |
 
-## Conceptos de programación utilizados
+El proyecto contiene seis clases concretas y una clase abstracta,
+además de las tres clases de excepciones personalizadas.
 
-- Abstracción mediante la clase Habitacion.
-- Herencia en los tres tipos de habitaciones.
-- Encapsulación de atributos mediante propiedades.
-- Polimorfismo al recorrer una lista de habitaciones y llamar
-  a los mismos métodos.
-- Asociación de Reserva con un huésped y una habitación.
-- Composición: cada reserva crea su propio DetalleEstadia.
+## Conceptos de programación orientada a objetos
+
+### Abstracción
+
+Habitacion hereda de ABC y declara los métodos abstractos
+calcular_precio y describir. No puede instanciarse directamente.
+
+### Herencia y especialización
+
+HabitacionIndividual, HabitacionDoble y Suite heredan de Habitacion.
+
+Las tres comparten número, capacidad y tarifa por noche.
+Cada una tiene atributos propios que intervienen en su descripción
+y en el cálculo del precio.
+
+### Encapsulamiento
+
+Los atributos se almacenan con doble guion bajo y se consultan
+mediante propiedades. Los constructores validan los datos recibidos.
+
+La propiedad servicios de Suite devuelve una copia para evitar
+modificar directamente la lista interna.
+
+### Sobreescritura y polimorfismo
+
+Las tres clases hijas sobrescriben calcular_precio y describir.
+
+main.py crea una lista con los tres tipos de habitaciones.
+Un único ciclo llama a los mismos métodos sobre cada objeto,
+sin condicionales para seleccionar el comportamiento por su tipo.
+
+### Asociaciones
+
+Reserva se relaciona con un objeto Huesped y un objeto Habitacion.
+
+Un huésped y una habitación pueden participar en distintas reservas
+y existir independientemente de ellas.
+
+### Composición
+
+Cada Reserva crea su propio DetalleEstadia dentro del constructor.
+El detalle forma parte de la reserva y no se comparte entre reservas.
+
+No se utiliza herencia porque una reserva contiene un detalle
+de estadía; no es un detalle de estadía.
+
+## Excepciones personalizadas
+
+| Excepción | Situación controlada | Método que la lanza |
+|---|---|---|
+| FechasInvalidasError | La salida es igual o anterior a la entrada. | Constructor de DetalleEstadia. |
+| CapacidadExcedidaError | La cantidad de huéspedes supera la capacidad. | Constructor de Reserva. |
+| HabitacionNoDisponibleError | Existen fechas cruzadas con una reserva confirmada de la misma habitación. | confirmar de Reserva. |
+
+main.py captura cada excepción, muestra un mensaje claro
+y continúa con las siguientes demostraciones.
+
+Las validaciones generales de datos utilizan ValueError.
 
 ## Archivos del proyecto
 
@@ -46,15 +96,14 @@ sin utilizar una base de datos.
 - habitacion_individual.py
 - habitacion_doble.py
 - suite.py
+- huesped.py
 - detalle_estadia.py
 - reserva.py
+- excepciones.py
 - main.py
 - README.md
 - diagrama_uml.md
 - decisiones_diseno.md
-
-Los archivos huesped.py y excepciones.py están pendientes
-de incorporación.
 
 ## Requisitos
 
@@ -63,92 +112,87 @@ de incorporación.
 
 ## Cómo ejecutar
 
-Abre una terminal ubicada en la carpeta del proyecto y ejecuta:
+Descarga o clona el repositorio y abre una terminal
+dentro de la carpeta Sistema_Reservas_Hotel.
+
+Ejecuta:
 
 ```bash
 python main.py
 ```
 
-El programa principal actual muestra los tres tipos de habitaciones
-y calcula sus precios para una estadía de dos noches.
+En Windows, si python no está disponible, puedes utilizar:
 
-## Resultados de la demostración actual
+```bash
+py main.py
+```
 
-- Habitación individual con desayuno: 190.00 por dos noches.
-- Habitación doble con balcón: 280.00 por dos noches.
-- Suite con cargo adicional: 500.00 por dos noches.
+## Demostración del programa
 
-Los cargos y las capacidades son reglas de la demostración académica
-y no representan las tarifas de un hotel real.
+El programa principal:
 
-## Verificaciones realizadas
+1. Muestra los tres tipos de habitaciones mediante polimorfismo.
+2. Calcula sus precios para dos noches.
+3. Crea y muestra tres huéspedes.
+4. Crea y confirma tres reservas en habitaciones diferentes.
+5. Captura una excepción por fechas inválidas.
+6. Captura una excepción por capacidad excedida.
+7. Captura una excepción por una habitación no disponible.
+8. Confirma una reserva consecutiva válida.
+9. Muestra el total de cuatro reservas confirmadas.
 
-Se ejecutó el programa principal y se revisaron los cálculos
-de los tres tipos de habitaciones.
+Se crean tres habitaciones, tres huéspedes y cuatro reservas válidas:
+diez objetos de las entidades principales, además de sus detalles
+de estadía y la reserva cuya confirmación se rechaza.
 
-También se comprobó que:
+## Resultados esperados
 
-- DetalleEstadia calcula correctamente la cantidad de noches.
-- Se rechazan fechas de salida iguales o anteriores a la entrada.
-- Se rechaza una cantidad de huéspedes superior a la capacidad.
-- Una reserva confirmada impide confirmar otra de la misma habitación
-  con fechas que se cruzan.
-- Se permiten reservas consecutivas cuando una comienza el día
-  en que termina la anterior.
-- Las reservas de habitaciones diferentes no se bloquean entre sí.
-- Las reservas pendientes no bloquean la disponibilidad.
-- Cada reserva crea un detalle de estadía independiente.
-- Consultar y modificar la copia de los servicios de una suite
-  no modifica su lista interna.
+| Habitación | Cálculo para dos noches | Total |
+|---|---|---|
+| Individual con desayuno | (80 + 15) × 2 | 190.00 |
+| Doble con balcón | (120 + 20) × 2 | 280.00 |
+| Suite con cargo adicional | (200 + 50) × 2 | 500.00 |
 
-En la revisión de una copia del repositorio se realizaron
-32 comprobaciones satisfactorias con apoyo de ChatGPT.
-Para probar Reserva se utilizó un objeto temporal con un nombre,
-porque la clase Huesped todavía no está incorporada.
-Estas pruebas deberán repetirse con la clase definitiva.
+Los cargos y las capacidades son reglas elegidas
+para la demostración académica.
 
-Actualmente los errores de fechas, capacidad y disponibilidad
-utilizan ValueError. La captura de las tres excepciones personalizadas
-en main.py sigue pendiente.
+Una reserva puede comenzar el mismo día en que termina otra.
+Las reservas pendientes no bloquean la disponibilidad.
+
+## Verificación realizada
+
+Se ejecutó python main.py y se comprobó que:
+
+- Los precios coinciden con los resultados esperados.
+- Las tres reservas iniciales se confirman correctamente.
+- Se capturan las tres excepciones personalizadas.
+- El programa continúa después de cada error controlado.
+- Se rechaza una reserva con fechas cruzadas.
+- Se permite una reserva consecutiva.
+- El total final es de cuatro reservas confirmadas.
+- La ejecución llega a FIN DE LA DEMOSTRACIÓN sin errores
+  no controlados.
+
+Esta verificación corresponde a los casos incluidos en main.py.
 
 ## Documentación
 
-- [Diagrama UML](diagrama_uml.md): muestra las clases y sus relaciones.
-- [Decisiones de diseño](decisiones_diseno.md): explica la estructura,
-  las decisiones adoptadas, las pruebas y el trabajo pendiente.
-
-Ambos documentos son versiones provisionales y se actualizarán
-después de la integración final.
-
-## Estado actual y trabajo pendiente
-
-El repositorio incluye las habitaciones, DetalleEstadia, Reserva,
-la demostración inicial, el diagrama UML y el borrador del documento
-de decisiones de diseño.
-
-Para completar el proyecto falta:
-
-- Incorporar la clase Huesped.
-- Incorporar FechasInvalidasError, CapacidadExcedidaError
-  y HabitacionNoDisponibleError.
-- Validar que Reserva reciba un objeto Huesped válido.
-- Sustituir los ValueError correspondientes por las excepciones
-  personalizadas.
-- Ampliar main.py con al menos ocho objetos y demostraciones
-  de reservas válidas.
-- Capturar las tres excepciones en el programa principal,
-  mostrar mensajes claros y continuar la ejecución.
-- Repetir las pruebas con todos los componentes integrados.
-- Actualizar el UML y el documento de decisiones de diseño.
-- Verificar que cada integrante tenga un commit de su aporte real.
-
-El proyecto todavía no está listo para la entrega final.
+- [Diagrama UML de clases](diagrama_uml.md).
+- [Documento de Decisiones de Diseño](decisiones_diseno.md).
 
 ## Uso de inteligencia artificial
 
-Se utilizó ChatGPT como herramienta de apoyo para explicar conceptos,
-orientar la estructura del proyecto y ayudar con fragmentos de código,
-documentación y comprobaciones.
+Se utilizó ChatGPT como apoyo en el desarrollo del código
+y la documentación. Su uso se describe en el Documento
+de Decisiones de Diseño.
 
-Los integrantes son responsables de revisar, comprender y validar
-la versión final del proyecto.
+## Alcance y limitaciones
+
+El proyecto es una demostración académica en consola.
+
+La comprobación de disponibilidad requiere proporcionar
+la lista completa de reservas existentes al método confirmar.
+El número de habitación se considera único dentro del hotel.
+
+No incluye interfaz gráfica, pagos, base de datos
+ni almacenamiento permanente.

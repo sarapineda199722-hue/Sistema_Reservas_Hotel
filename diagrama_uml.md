@@ -1,8 +1,5 @@
 # Diagrama UML — Sistema de Reservas de Hotel
 
-El diagrama representa el diseño previsto del sistema.
-La clase Huesped está pendiente de incorporación.
-
 ```mermaid
 classDiagram
     direction TB
@@ -40,6 +37,7 @@ classDiagram
     class Huesped {
         -nombre: str
         -identificacion: str
+        +describir() str
     }
 
     class DetalleEstadia {
@@ -52,10 +50,29 @@ classDiagram
 
     class Reserva {
         -codigo: str
+        -huesped: Huesped
+        -habitacion: Habitacion
+        -detalle: DetalleEstadia
         -confirmada: bool
         +calcular_total() float
         +confirmar(reservas_existentes)
         +describir() str
+    }
+
+    class Exception {
+        <<exception>>
+    }
+
+    class FechasInvalidasError {
+        <<exception>>
+    }
+
+    class CapacidadExcedidaError {
+        <<exception>>
+    }
+
+    class HabitacionNoDisponibleError {
+        <<exception>>
     }
 
     Habitacion <|-- HabitacionIndividual
@@ -65,12 +82,43 @@ classDiagram
     Reserva "0..*" --> "1" Huesped : corresponde a
     Reserva "0..*" --> "1" Habitacion : reserva
     Reserva "1" *-- "1" DetalleEstadia : crea y contiene
+
+    Exception <|-- FechasInvalidasError
+    Exception <|-- CapacidadExcedidaError
+    Exception <|-- HabitacionNoDisponibleError
+
+    DetalleEstadia ..> FechasInvalidasError : lanza
+    Reserva ..> CapacidadExcedidaError : lanza
+    Reserva ..> HabitacionNoDisponibleError : lanza
 ```
 
-## Relaciones
+## Relaciones del sistema
 
-- Herencia: HabitacionIndividual, HabitacionDoble y Suite son tipos de Habitacion.
-- Asociación: cada Reserva corresponde a un Huesped y a una Habitacion.
-- Composición: Reserva crea y contiene su propio DetalleEstadia.
-- Un huésped o una habitación pueden estar asociados a varias reservas.
-- Las reservas confirmadas de una misma habitación no pueden tener fechas que se crucen.
+- **Herencia:** HabitacionIndividual, HabitacionDoble y Suite
+  heredan de la clase abstracta Habitacion.
+- **Asociación:** cada Reserva se relaciona con un Huesped
+  y una Habitacion. Estos objetos pueden existir independientemente
+  de la reserva.
+- **Composición:** cada Reserva crea y contiene un DetalleEstadia
+  exclusivo que forma parte de su estructura.
+- **Herencia de excepciones:** las tres excepciones personalizadas
+  heredan de Exception, una clase incorporada de Python.
+- **Dependencia:** las flechas discontinuas indican qué clases
+  lanzan las excepciones personalizadas.
+
+## Reglas de disponibilidad
+
+Una habitación puede participar en varias reservas,
+pero sus reservas confirmadas no pueden tener fechas cruzadas.
+
+Se permite que una reserva comience el mismo día
+en que termina otra. Las reservas pendientes no bloquean
+la disponibilidad.
+
+## Encapsulamiento
+
+El signo menos representa los atributos privados.
+El signo más representa los métodos públicos.
+
+El código utiliza propiedades para consultar los atributos
+de las entidades.
