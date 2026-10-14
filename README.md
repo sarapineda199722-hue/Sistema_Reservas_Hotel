@@ -3,6 +3,10 @@
 Proyecto de la Actividad Colaborativa N.º 3: Proyecto Final,
 de la asignatura Programación I de la Universidad de Manizales.
 
+## Elaborado por
+
+Sara Liliana Pineda Castro
+
 ## Descripción
 
 El sistema permite representar diferentes tipos de habitaciones,
@@ -112,8 +116,8 @@ Las validaciones generales de datos utilizan ValueError.
 
 ## Cómo ejecutar
 
-Descarga o clona el repositorio y abre una terminal
-dentro de la carpeta Sistema_Reservas_Hotel.
+Descarga o clona el repositorio y abre una terminal dentro
+de la carpeta que contiene main.py.
 
 Ejecuta:
 
